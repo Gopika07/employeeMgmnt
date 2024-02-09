@@ -104,35 +104,35 @@ namespace employeeMgmnt.Controllers
         }
 
 
-        //[HttpPost]
-        //[Authorize]
-        //public IActionResult ApplyLeave([FromBody] LeaveDto leave)
-        //{
-        //    var leaveApplication = new Leave
-        //    {
-        //        employeeName = leave.employeeName,
-        //        startDate = leave.startDate,
-        //        endDate = leave.endDate,
-        //        status = "Pending"
-        //    };
+        [HttpPost("ApplyLeave")]
+        [Authorize]
+        public IActionResult ApplyLeave([FromBody] LeaveDto leave)
+        {
+                var leaveApplication = new Leave
+                {
+                    EmployeeName = leave.employeeName,
+                    StartDate = leave.startDate,
+                    EndDate = leave.endDate,
+                    Status = "Pending"
+                };
 
-        //    LeaveApplications.Add(leaveApplication);
-        //    return Ok("Leave applied Successfully");
-        //}
+                LeaveApplications.Add(leaveApplication);
+                return Ok("Leave applied Successfully");
+        }
 
-        //[HttpPut("{employeeName}")]
-        //[Authorize(Roles = "Administrator")]
-        //public IActionResult ApproveLeave(string employeeName)
-        //{
-        //    var leaveApplication = LeaveApplications.FirstOrDefault(la => la.employeeName == employeeName);
-        //    if (leaveApplication != null)
-        //    {
-        //        leaveApplication.status = "Approved";
-        //        return NoContent();
-        //    }
+        [HttpPut("ApproveLeave/{employeeName}")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult ApproveLeave(string employeeName)
+        {
+            var leaveApplication = LeaveApplications.FirstOrDefault(la => la.EmployeeName == employeeName);
+            if (leaveApplication != null)
+            {
+                leaveApplication.Status = "Approved";
+                return Ok("Leave Approved!");
+            }
 
-        //    return NotFound();
-        //}
+            return NotFound("Leave could not be approved");
+        }
 
         //[HttpGet("{employeeName}")]
         //[Authorize]
