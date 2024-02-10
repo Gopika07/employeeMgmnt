@@ -2,9 +2,9 @@
 {
     public class Leave
     {
-        public string employeeName { get; set; }
-        public DateOnly startDate { get; set; }
-        public DateOnly endDate { get; set; }
-        public string status;
+        public string EmployeeName { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Status { get; set; }
     }
 }

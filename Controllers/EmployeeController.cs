@@ -5,26 +5,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using employeeMgmnt.Dto;
+using employeeMgmnt.Data;
 using Microsoft.AspNetCore.Authorization;
 
 namespace employeeMgmnt.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class EmployeeController : ControllerBase
     {
-        private static readonly List<Employee> employees = new List<Employee>()
+        public EmployeeController()
         {
-            new Employee { EmployeeName = "string", Password = "string", Role = "Administrator", ManagerId = 1},
-            new Employee { EmployeeName =  "string", Password = "string", Role = "employee", ManagerId = 1 },
-        };
+            
+        }
 
-        private static readonly List<Leave> LeaveApplications = new List<Leave>();
-
-        [HttpPost("login")]
+        [HttpPost("employee/login")]
         public async Task<IActionResult> Login(Employee emp)
         {
-            var employee = employees.FirstOrDefault(e => e.EmployeeName == emp.EmployeeName && e.Password == emp.Password);
+            var employee = DataManager.employees.FirstOrDefault(e => e.EmployeeName == emp.EmployeeName && e.Password == emp.Password);
             if (employee != null)
             {
                 var claims = new List<Claim>
@@ -49,25 +47,25 @@ namespace employeeMgmnt.Controllers
             return Unauthorized();
         }
 
-        [HttpPost("logout")]
+        [HttpPost("employee/logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return NoContent();
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("employee/getAll")]
         [Authorize(Roles = "Administrator")]
         public IActionResult GetAllEmployees()
         {
-            var allEmp = employees.ToList();
+            var allEmp = DataManager.employees.ToList();
             return Ok(allEmp);
         }
 
         [HttpGet("{employeeName}")]
         public IActionResult GetEmployeeById(string employeeName)
         {
-            var employee = employees.FirstOrDefault(e => e.EmployeeName == employeeName);
+            var employee = DataManager.employees.FirstOrDefault(e => e.EmployeeName == employeeName);
             if (employee != null)
             {
                 var currEmployee = User.Identity.Name;
@@ -79,7 +77,7 @@ namespace employeeMgmnt.Controllers
             return NotFound();
         }
 
-        [HttpPost("Add")]
+        [HttpPost("employee/AddEmployee")]
         [Authorize(Roles = "Administrator")]
         public IActionResult AddEmployee([FromBody] EmployeeDto emp)
         {
@@ -91,66 +89,17 @@ namespace employeeMgmnt.Controllers
                 ManagerId = emp.managerId
             };
 
-            employees.Add(employee);
+            DataManager.employees.Add(employee);
             return Ok("Employee Added");
         }
 
-        [HttpGet("reportees/{managerId}")]
+        [HttpGet("employee/reportees/{managerId}")]
         [Authorize(Roles = "Administrator")]
         public IActionResult GetReportees(int managerId)
         {
-            var reportees = employees.Where(e => e.ManagerId == managerId && e.Role == "employee").ToList();
+            var reportees = DataManager.employees.Where(e => e.ManagerId == managerId && e.Role == "employee").ToList();
             return Ok(reportees);
         }
-
-
-        //[HttpPost]
-        //[Authorize]
-        //public IActionResult ApplyLeave([FromBody] LeaveDto leave)
-        //{
-        //    var leaveApplication = new Leave
-        //    {
-        //        employeeName = leave.employeeName,
-        //        startDate = leave.startDate,
-        //        endDate = leave.endDate,
-        //        status = "Pending"
-        //    };
-
-        //    LeaveApplications.Add(leaveApplication);
-        //    return Ok("Leave applied Successfully");
-        //}
-
-        //[HttpPut("{employeeName}")]
-        //[Authorize(Roles = "Administrator")]
-        //public IActionResult ApproveLeave(string employeeName)
-        //{
-        //    var leaveApplication = LeaveApplications.FirstOrDefault(la => la.employeeName == employeeName);
-        //    if (leaveApplication != null)
-        //    {
-        //        leaveApplication.status = "Approved";
-        //        return NoContent();
-        //    }
-
-        //    return NotFound();
-        //}
-
-        //[HttpGet("{employeeName}")]
-        //[Authorize]
-        //public IActionResult GetLeaveApplication(string employeeName)
-        //{
-        //    var leaveApplication = LeaveApplications.FirstOrDefault(la => la.employeeName == employeeName);
-        //    if (leaveApplication != null)
-        //    {
-        //        // Only allow managers to see approved leaves or their own pending leaves
-        //        if (User.IsInRole("Manager") || (leaveApplication.status == "Pending" && leaveApplication.employeeName == User.Identity.Name))
-        //        {
-        //            return Ok(leaveApplication);
-        //        }
-        //    }
-
-        //    return NotFound();
-        //}
-
 
     }
 }
