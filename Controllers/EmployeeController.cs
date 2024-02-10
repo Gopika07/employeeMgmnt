@@ -100,6 +100,5 @@ namespace employeeMgmnt.Controllers
             var reportees = DataManager.employees.Where(e => e.ManagerId == managerId && e.Role == "employee").ToList();
             return Ok(reportees);
         }
-
     }
 }
