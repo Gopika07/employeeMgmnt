@@ -14,10 +14,6 @@ namespace employeeMgmnt.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        public EmployeeController()
-        {
-            
-        }
 
         [HttpPost("employee/login")]
         public async Task<IActionResult> Login(Employee emp)
@@ -55,7 +51,7 @@ namespace employeeMgmnt.Controllers
         }
 
         [HttpGet("employee/getAll")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "manager")]
         public IActionResult GetAllEmployees()
         {
             var allEmp = DataManager.employees.ToList();
@@ -69,7 +65,7 @@ namespace employeeMgmnt.Controllers
             if (employee != null)
             {
                 var currEmployee = User.Identity.Name;
-                if(currEmployee == employee.EmployeeName || User.IsInRole("Administrator"))
+                if(currEmployee == employee.EmployeeName || User.IsInRole("manager"))
                 {
                     return Ok(employee);
                 }
@@ -78,7 +74,7 @@ namespace employeeMgmnt.Controllers
         }
 
         [HttpPost("employee/AddEmployee")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "manager")]
         public IActionResult AddEmployee([FromBody] EmployeeDto emp)
         {
             var employee = new Employee
@@ -94,7 +90,7 @@ namespace employeeMgmnt.Controllers
         }
 
         [HttpGet("employee/reportees/{managerId}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "manager")]
         public IActionResult GetReportees(int managerId)
         {
             var reportees = DataManager.employees.Where(e => e.ManagerId == managerId && e.Role == "employee").ToList();

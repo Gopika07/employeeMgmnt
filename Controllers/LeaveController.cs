@@ -28,7 +28,7 @@ namespace employeeMgmnt.Controllers
         }
 
         [HttpPut("employee/ApproveLeave/{employeeName}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "manager")]
         public IActionResult ApproveLeave(string employeeName)
         {
             var leaveApplication = DataManager.LeaveApplications.FirstOrDefault(la => la.EmployeeName == employeeName);
